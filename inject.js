@@ -68,31 +68,77 @@ ytd-playlist-video-renderer:not(:hover) ytd-thumbnail,
   filter: blur(16px);
 }`,
   "solid-color": `
-.yt-core-image, .yt-thumbnail-view-model__image, .ytThumbnailViewModelImage .ytCoreImageHost, .ytd-thumbnail .ytCoreImageHost, .shortsLockupViewModelHostThumbnail {
-  display: none !important;
+/* Thumbnails stay in the layout (so containers keep their size on the watch page)
+   but are invisible, giving a solid-color block.
+   The transition has a 1s delay ONLY on the hover side, so the reveal
+   only happens if you keep hovering for 2 seconds. Un-hovering hides
+   immediately with a short fade. */
+.yt-core-image,
+.yt-thumbnail-view-model__image,
+.ytThumbnailViewModelImage .ytCoreImageHost,
+.ytd-thumbnail .ytCoreImageHost,
+.shortsLockupViewModelHostThumbnail,
+#media-container #media,
+#media-container #media-background {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  /* Default (un-hover) transition: no delay, quick fade-out */
+  transition: opacity 0.25s ease 0s, visibility 0s linear 0.25s !important;
 }
 
+/* Solid color backgrounds (same placement as the original, so sizes match) */
 ytd-thumbnail.style-scope.ytd-compact-video-renderer {
   background-color: var(--yt-spec-additive-background);
   border-radius: 1rem;
 }
 
-ytd-thumbnail #thumbnail.ytd-thumbnail, .ytThumbnailViewModelImage, .ytd-thumbnail
+ytd-thumbnail #thumbnail.ytd-thumbnail,
+.ytThumbnailViewModelImage,
+.ytd-thumbnail,
 ytm-shorts-lockup-view-model .shortsLockupViewModelHostThumbnailContainer,
-#media-container, .shortsLockupViewModelHostThumbnailContainer { 
+#media-container,
+.shortsLockupViewModelHostThumbnailContainer {
   background-color: var(--yt-spec-additive-background);
 }
 
-#media-container:not(:hover) #media,
-#media-container:not(:hover) #media-background {
-  display: none;
+/* Hover reveal — fires only after 2 seconds of continuous hover.
+   Works on home page, watch-page sidebar, playlists, etc. */
+ytd-thumbnail:hover .yt-core-image,
+ytd-thumbnail:hover .ytCoreImageHost,
+yt-thumbnail-view-model:hover .yt-thumbnail-view-model__image,
+yt-thumbnail-view-model:hover .ytCoreImageHost,
+.ytThumbnailViewModelImage:hover .ytCoreImageHost,
+.shortsLockupViewModelHostThumbnailContainer:hover .shortsLockupViewModelHostThumbnail,
+ytm-shorts-lockup-view-model .shortsLockupViewModelHostThumbnailContainer:hover .shortsLockupViewModelHostThumbnail,
+#media-container:hover #media,
+#media-container:hover #media-background {
+  visibility: visible !important;
+  opacity: 1 !important;
+  /* Hover transition: wait 1s before starting the fade-in */
+  transition: opacity 0.25s ease 1s, visibility 0s linear 1s !important;
 }
 
-.ytp-videowall-still-image, 
+/* Video-wall thumbnails: overlay fades out only after 1s of hovering */
+.ytp-videowall-still-image,
 .ytp-modern-videowall-still-image {
-  background-color: var(--yt-spec-static-overlay-filled-hover);
-  background-image: none !important;
+  position: relative !important;
 }
+.ytp-videowall-still-image::after,
+.ytp-modern-videowall-still-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--yt-spec-static-overlay-filled-hover);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.25s ease 0s;
+}
+.ytp-videowall-still:hover .ytp-videowall-still-image::after,
+.ytp-modern-videowall-still:hover .ytp-modern-videowall-still-image::after {
+  opacity: 0;
+  transition: opacity 0.25s ease 1s;
+}
+
 .ytp-videowall-still-info-content,
 .ytp-modern-videowall-still-info-content {
   opacity: 1 !important;
