@@ -68,31 +68,70 @@ ytd-playlist-video-renderer:not(:hover) ytd-thumbnail,
   filter: blur(16px);
 }`,
   "solid-color": `
-.yt-core-image, .yt-thumbnail-view-model__image, .ytThumbnailViewModelImage .ytCoreImageHost, .ytd-thumbnail .ytCoreImageHost, .shortsLockupViewModelHostThumbnail {
-  display: none !important;
+/* Background colors for solid color effect */
+ytd-thumbnail,
+yt-thumbnail-view-model,
+.ytThumbnailViewModelImage,
+ytm-shorts-lockup-view-model .shortsLockupViewModelHostThumbnailContainer,
+#media-container,
+.shortsLockupViewModelHostThumbnailContainer {
+  background-color: var(--yt-spec-additive-background);
 }
 
+/* Hide images by default */
+.yt-core-image,
+.yt-thumbnail-view-model__image,
+.ytThumbnailViewModelImage .ytCoreImageHost,
+ytd-thumbnail .ytCoreImageHost,
+.shortsLockupViewModelHostThumbnail,
+#media-container #media,
+#media-container #media-background {
+  opacity: 0 !important;
+  transition: opacity 0.25s ease-in-out;
+}
+
+/* Show images on hover */
+ytd-thumbnail:hover .yt-core-image,
+ytd-thumbnail:hover .ytCoreImageHost,
+yt-thumbnail-view-model:hover .yt-thumbnail-view-model__image,
+yt-thumbnail-view-model:hover .ytCoreImageHost,
+.ytThumbnailViewModelImage:hover .ytCoreImageHost,
+.shortsLockupViewModelHostThumbnailContainer:hover .shortsLockupViewModelHostThumbnail,
+#media-container:hover #media,
+#media-container:hover #media-background {
+  opacity: 1 !important;
+}
+
+/* Specific styling for compact video renderer thumbnails */
 ytd-thumbnail.style-scope.ytd-compact-video-renderer {
-  background-color: var(--yt-spec-additive-background);
   border-radius: 1rem;
 }
 
-ytd-thumbnail #thumbnail.ytd-thumbnail, .ytThumbnailViewModelImage, .ytd-thumbnail
-ytm-shorts-lockup-view-model .shortsLockupViewModelHostThumbnailContainer,
-#media-container, .shortsLockupViewModelHostThumbnailContainer { 
-  background-color: var(--yt-spec-additive-background);
-}
-
-#media-container:not(:hover) #media,
-#media-container:not(:hover) #media-background {
-  display: none;
-}
-
-.ytp-videowall-still-image, 
+/* Video wall thumbnails */
+.ytp-videowall-still-image,
 .ytp-modern-videowall-still-image {
-  background-color: var(--yt-spec-static-overlay-filled-hover);
-  background-image: none !important;
+  position: relative !important;
 }
+
+.ytp-videowall-still-image::after,
+.ytp-modern-videowall-still-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--yt-spec-static-overlay-filled-hover);
+  z-index: 1;
+  transition: opacity 0.25s ease-in-out;
+  pointer-events: none;
+}
+
+.ytp-videowall-still:hover .ytp-videowall-still-image::after,
+.ytp-modern-videowall-still:hover .ytp-modern-videowall-still-image::after {
+  opacity: 0;
+}
+
 .ytp-videowall-still-info-content,
 .ytp-modern-videowall-still-info-content {
   opacity: 1 !important;
